@@ -1,71 +1,55 @@
+from hash_table import HashTable
+
+
 class HashSet:
-    def __init__(self, capacity=16):
-        self.capacity = capacity
-        self.size = 0
-        self.buckets = [[] for _ in range(capacity)]
+    def __init__(self):
+        self._table = HashTable()
 
     def __len__(self):
-        return self.size
+        return len(self._table)
 
     def __contains__(self, item):
-        index = hash(item) % self.capacity
-        return item in self.buckets[index]
-
+        return item in self._table
     def is_empty(self):
-        return self.size == 0
+        return len(self._table) == 0
 
     def add(self, value):
         if not isinstance(value, str):
             raise TypeError("HashSet only accepts strings")
-        index = hash(value) % self.capacity
-        if value not in self.buckets[index]:
-            self.buckets[index].append(value)
-            self.size += 1
-            return True
-        else:
+        if self._table.contains(value):
             return False
+        self._table.put(value, True)
+        return True
 
     def contains(self, value):
         if not isinstance(value, str):
             raise TypeError("HashSet only accepts strings")
-        index = hash(value) % self.capacity
-        return value in self.buckets[index]
+        return self._table.contains(value)
 
     def remove(self, value):
         if not isinstance(value, str):
             raise TypeError("HashSet only accepts strings")
-        index = hash(value) % self.capacity
-        if value in self.buckets[index]:
-            self.buckets[index].remove(value)
-            self.size -= 1
-            return True
-        else:
-            raise KeyError(value)
+        return self._table.remove(value)
 
     def discard(self, value):
         if not isinstance(value, str):
             raise TypeError("HashSet only accepts strings")
-        index = hash(value) % self.capacity
-        if value in self.buckets[index]:
-            self.buckets[index].remove(value)
-            self.size -= 1
+        try:
+            self._table.remove(value)
             return True
-        return False
+        except KeyError:
+            return False
 
     def clear(self):
-        self.buckets = [[] for _ in range(self.capacity)]
-        self.size = 0
+        self._table = HashTable()
 
     def to_list(self):
-        result = []
-        for bucket in self.buckets:
-            result.extend(bucket)
-        return result
+        return self._table.keys()
 
     def union(self, other_set):
         if not isinstance(other_set, HashSet):
             raise TypeError("Argument must be a HashSet")
-        result_set = HashSet(max(self.capacity, other_set.capacity))
+        result_set = HashSet()
         for value in self.to_list():
             result_set.add(value)
         for value in other_set.to_list():
@@ -75,7 +59,7 @@ class HashSet:
     def intersection(self, other_set):
         if not isinstance(other_set, HashSet):
             raise TypeError("Argument must be a HashSet")
-        result_set = HashSet(min(self.capacity, other_set.capacity))
+        result_set = HashSet()
         for value in self.to_list():
             if other_set.contains(value):
                 result_set.add(value)
@@ -84,7 +68,7 @@ class HashSet:
     def difference(self, other_set):
         if not isinstance(other_set, HashSet):
             raise TypeError("Argument must be a HashSet")
-        result_set = HashSet(self.capacity)
+        result_set = HashSet()
         for value in self.to_list():
             if not other_set.contains(value):
                 result_set.add(value)
@@ -93,7 +77,7 @@ class HashSet:
     def symmetric_difference(self, other_set):
         if not isinstance(other_set, HashSet):
             raise TypeError("Argument must be a HashSet")
-        result_set = HashSet(max(self.capacity, other_set.capacity))
+        result_set = HashSet()
         for value in self.to_list():
             if not other_set.contains(value):
                 result_set.add(value)
