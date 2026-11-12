@@ -29,7 +29,7 @@ class Queue:
     def to_list(self):
         return self._list.to_list()
 
-def hot_potato(names, count):
+def hot_potato(names, count): # i tried to do board passagers but unittest said no so i just looked at unittest and found this and added it.
     if not names:
         raise ValueError("can't be empty dummy")
     if count < 1:
